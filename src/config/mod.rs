@@ -14,21 +14,13 @@
 // handle.
 
 use curl::easy::Easy2;
-use std::{
-    iter::FromIterator,
-    time::Duration,
-};
+use std::{iter::FromIterator, time::Duration};
 
 pub(crate) mod dns;
 pub(crate) mod ssl;
 
 pub use dns::DnsCache;
-pub use ssl::{
-    ClientCertificate,
-    CaCertificate,
-    PrivateKey,
-    SslOption,
-};
+pub use ssl::{CaCertificate, ClientCertificate, PrivateKey, SslOption};
 
 /// A helper trait for applying a configuration value to a given curl handle.
 pub(crate) trait SetOpt {
@@ -252,6 +244,14 @@ impl SetOpt for Proxy<Option<http::Uri>> {
             Some(uri) => easy.proxy(&format!("{}", uri)),
             None => easy.proxy(""),
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct Interface(pub(crate) String);
+impl SetOpt for Interface {
+    fn set_opt<H>(&self, easy: &mut Easy2<H>) -> Result<(), curl::Error> {
+        easy.interface(&self.0)
     }
 }
 

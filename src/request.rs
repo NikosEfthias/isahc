@@ -2,12 +2,10 @@ use crate::{
     auth::{Authentication, Credentials},
     client::ResponseFuture,
     config::*,
-    {Body, Error},
+    Body, Error,
 };
 use http::{Request, Response};
-use std::iter::FromIterator;
-use std::net::SocketAddr;
-use std::time::Duration;
+use std::{iter::FromIterator, net::SocketAddr, time::Duration};
 
 /// Provides additional methods when building a request for configuring various
 /// execution-related options on how the request should be sent.
@@ -110,7 +108,8 @@ pub trait RequestBuilderExt {
     ///
     /// Setting to `None` explicitly disable the use of a proxy.
     fn proxy(&mut self, proxy: impl Into<Option<http::Uri>>) -> &mut Self;
-
+    /// Adds interface to curl
+    fn interface(&mut self, interface: impl AsRef<str>) -> &mut Self;
     /// Disable proxy usage to use for the provided list of hosts.
     fn proxy_blacklist(&mut self, hosts: impl IntoIterator<Item = String>) -> &mut Self;
 
@@ -260,6 +259,9 @@ impl RequestBuilderExt for http::request::Builder {
 
     fn proxy(&mut self, proxy: impl Into<Option<http::Uri>>) -> &mut Self {
         self.extension(Proxy(proxy.into()))
+    }
+    fn interface(&mut self, interface: impl AsRef<str>) -> &mut Self {
+        self.extension(crate::config::Interface(interface.as_ref().to_string()))
     }
 
     fn proxy_blacklist(&mut self, hosts: impl IntoIterator<Item = String>) -> &mut Self {

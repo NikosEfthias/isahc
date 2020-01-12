@@ -301,6 +301,7 @@ impl HttpClientBuilder {
         self
     }
 
+
     /// Disable proxy usage to use for the provided list of hosts.
     ///
     /// # Examples
@@ -355,6 +356,10 @@ impl HttpClientBuilder {
         self
     }
 
+    fn interface(&mut self, interface: impl AsRef<str>) -> &mut Self {
+        self.defaults.insert(crate::config::Interface(interface.as_ref().to_string()));
+        self
+    }
     /// Set a maximum upload speed for the request body, in bytes per second.
     ///
     /// The default is unlimited.
@@ -1025,6 +1030,7 @@ impl HttpClient {
                 SslOption,
                 CloseConnection,
                 EnableMetrics,
+                Interface,
             ]
         );
 
